@@ -1,0 +1,17 @@
+name: Daily horoscope sync
+
+on:
+  schedule:
+    # 03:30 UTC — shortly after CosmyDay regenerates (~03:03 UTC), Kyiv morning.
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync today's horoscopes
+        run: |
+          curl -fsS -X POST "${{ secrets.SITE_URL }}/_agent-native/actions/sync-horoscope" \
+            -H "Content-Type: application/json" \
+            -d '{"token":"${{ secrets.HOROSCOPE_SYNC_TOKEN }}"}'
