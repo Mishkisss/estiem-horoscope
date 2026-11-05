@@ -8,5 +8,5 @@ export default createAuthPlugin({
   // Public site: every page is readable without a session (content is edited
   // via the sync-horoscope action, not from an admin UI). Prefix list, kept in
   // sync with PUBLIC_PATHS in app/root.tsx — the client gate is separate.
-  workspaceAppPublicPaths: ["/", "/signs", "/about", "/seasons"],
+  workspaceAppPublicPaths: ["/", "/signs", "/about"],
 });

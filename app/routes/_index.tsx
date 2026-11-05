@@ -23,10 +23,10 @@ export default function HomeRoute() {
   const cancerReading = data?.horoscopes.find((h) => h.sign === "cancer");
   const featuredTitle =
     cancerReading?.overview.split(/(?<=[.!?])\s/)[0] ??
-    "Сімейний або дружній затишок заповнить твій день теплом.";
+    "Family or friendly comfort will fill your day with warmth.";
   const featuredBody =
     cancerReading?.advice ??
-    "Сьогодні ти пекар смаколиків: спечи шарлотку для локального пікніка.";
+    "Today you are the baker of treats: bake a charlotte for the local picnic.";
   return (
     <Page>
       <section className="flex flex-col items-center gap-7 px-5 pb-24 pt-20 text-center md:px-16">
@@ -38,29 +38,29 @@ export default function HomeRoute() {
             {dayLabel(data?.date)}
           </span>
           <span className="text-lg font-semibold text-[#FAD44D]">
-            Щоденний гороскоп
+            Daily horoscope
           </span>
         </div>
         <p className="max-w-[760px] text-xl leading-normal text-[#94B0A1]">
-          Щоденний гороскоп від ESTIEM — обери свій знак і дізнайся, що чекає на
-          тебе сьогодні
+          The daily horoscope by ESTIEM — choose your sign and find out what
+          today has in store for you
         </p>
-        <GoldButton to="/signs">Обрати знак</GoldButton>
+        <GoldButton to="/signs">Choose your sign</GoldButton>
       </section>
 
       <section className="bg-[#174530] px-5 py-8 text-center md:px-16">
         <p className="text-sm font-semibold text-[#FAD44D]">
-          Сезонна тема · {season.label}
+          Seasonal theme · {season.label}
         </p>
         <p className="mt-2 text-[#94B0A1]">
-          Оформлення сайту автоматично змінюється разом із порами року.
+          The site's design changes automatically with the seasons.
         </p>
       </section>
 
       <section className="flex flex-col gap-8 px-5 py-20 md:px-16">
         <SectionIntro
-          title="Обери свій знак"
-          text="12 знаків зодіаку — кожен зі своїм періодом, назвою та коротким оглядом. Знайти свій знак ще простіше."
+          title="Choose your sign"
+          text="12 zodiac signs — each with its own period, name and short overview. Finding your sign is even easier."
         />
         <SignGrid />
       </section>

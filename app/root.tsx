@@ -80,7 +80,7 @@ function DbSyncSetup() {
 // exempts these prefixes from its auth guard, but <AppProviders> has its own
 // separate client-side gate that defaults to private — both lists must agree
 // or signed-out visitors still get bounced to /sign-in.
-const PUBLIC_PATHS = ["/", "/signs", "/about", "/seasons"];
+const PUBLIC_PATHS = ["/", "/signs", "/about"];
 
 function isPublicPathname(pathname: string): boolean {
   // Same prefix semantics as the server's matchesPathList: exact match or a

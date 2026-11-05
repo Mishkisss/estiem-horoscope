@@ -3,27 +3,29 @@ import { Link, NavLink } from "react-router";
 import type { ReactNode } from "react";
 
 export const SIGNS = [
-  { slug: "aries", en: "ARIES", uk: "Овен", period: "21.03 – 19.04" },
-  { slug: "taurus", en: "TAURUS", uk: "Тілець", period: "20.04 – 20.05" },
-  { slug: "gemini", en: "GEMINI", uk: "Близнюки", period: "21.05 – 20.06" },
-  { slug: "cancer", en: "CANCER", uk: "Рак", period: "21.06 – 22.07" },
-  { slug: "leo", en: "LEO", uk: "Лев", period: "23.07 – 22.08" },
-  { slug: "virgo", en: "VIRGO", uk: "Діва", period: "23.08 – 22.09" },
-  { slug: "libra", en: "LIBRA", uk: "Терези", period: "23.09 – 22.10" },
-  { slug: "scorpio", en: "SCORPIO", uk: "Скорпіон", period: "23.10 – 21.11" },
-  { slug: "sagittarius", en: "SAGITTARIUS", uk: "Стрілець", period: "22.11 – 21.12" },
-  { slug: "capricorn", en: "CAPRICORN", uk: "Козеріг", period: "22.12 – 19.01" },
-  { slug: "aquarius", en: "AQUARIUS", uk: "Водолій", period: "20.01 – 18.02" },
-  { slug: "pisces", en: "PISCES", uk: "Риби", period: "19.02 – 20.03" },
+  { slug: "aries", en: "ARIES", name: "Aries", period: "21.03 – 19.04" },
+  { slug: "taurus", en: "TAURUS", name: "Taurus", period: "20.04 – 20.05" },
+  { slug: "gemini", en: "GEMINI", name: "Gemini", period: "21.05 – 20.06" },
+  { slug: "cancer", en: "CANCER", name: "Cancer", period: "21.06 – 22.07" },
+  { slug: "leo", en: "LEO", name: "Leo", period: "23.07 – 22.08" },
+  { slug: "virgo", en: "VIRGO", name: "Virgo", period: "23.08 – 22.09" },
+  { slug: "libra", en: "LIBRA", name: "Libra", period: "23.09 – 22.10" },
+  { slug: "scorpio", en: "SCORPIO", name: "Scorpio", period: "23.10 – 21.11" },
+  { slug: "sagittarius", en: "SAGITTARIUS", name: "Sagittarius", period: "22.11 – 21.12" },
+  { slug: "capricorn", en: "CAPRICORN", name: "Capricorn", period: "22.12 – 19.01" },
+  { slug: "aquarius", en: "AQUARIUS", name: "Aquarius", period: "20.01 – 18.02" },
+  { slug: "pisces", en: "PISCES", name: "Pisces", period: "19.02 – 20.03" },
 ] as const;
 
 export type SignSlug = (typeof SIGNS)[number]["slug"];
 
+// Seasonal theming is fully automatic (calendar-based via useCurrentSeason);
+// there is deliberately no user-facing control to switch seasons.
 export const SEASON_THEMES = [
-  { key: "winter", label: "Зима", note: "Сніжинки" },
-  { key: "spring", label: "Весна", note: "Квіти" },
-  { key: "summer", label: "Літо", note: "Сонячні промені" },
-  { key: "autumn", label: "Осінь", note: "Листя" },
+  { key: "winter", label: "Winter" },
+  { key: "spring", label: "Spring" },
+  { key: "summer", label: "Summer" },
+  { key: "autumn", label: "Autumn" },
 ] as const;
 
 export type SeasonKey = (typeof SEASON_THEMES)[number]["key"];
@@ -66,10 +68,9 @@ export function Logo({ width = 173 }: { width?: number }) {
 }
 
 const NAV = [
-  { to: "/", label: "Головна", end: true as const },
-  { to: "/signs", label: "Знаки" },
-  { to: "/seasons", label: "Сезони" },
-  { to: "/about", label: "Про нас" },
+  { to: "/", label: "Home", end: true as const },
+  { to: "/signs", label: "Signs" },
+  { to: "/about", label: "About" },
 ];
 
 const AUTUMN_LEAVES = [
@@ -268,15 +269,8 @@ function SeasonalDecor({ season }: { season: SeasonKey }) {
   );
 }
 
-export function Page({
-  children,
-  seasonOverride,
-}: {
-  children: ReactNode;
-  seasonOverride?: SeasonKey | undefined;
-}) {
-  const currentSeason = useCurrentSeason();
-  const season = SEASON_THEMES.find((theme) => theme.key === seasonOverride) ?? currentSeason;
+export function Page({ children }: { children: ReactNode }) {
+  const season = useCurrentSeason();
   return (
     <div
       className="relative flex min-h-screen flex-col overflow-x-hidden font-['Inter',sans-serif] text-white"
@@ -310,23 +304,23 @@ export function Page({
         </div>
         <div className="grid gap-8 border-t border-[#94B0A1]/30 pt-7 md:grid-cols-2">
           <div>
-            <h2 className="mb-3 text-sm font-bold text-white">ESTIEM · міжнародна організація</h2>
+            <h2 className="mb-3 text-sm font-bold text-white">ESTIEM · international organization</h2>
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#94B0A1]">
-              <a href="https://estiem.org/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Сайт</a>
+              <a href="https://estiem.org/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Website</a>
               <a href="https://www.facebook.com/ESTIEMfb/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Facebook</a>
               <a href="https://www.linkedin.com/company/estiem/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">LinkedIn</a>
               <a href="https://www.instagram.com/estiem_official/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Instagram</a>
             </div>
           </div>
           <div>
-            <h2 className="mb-3 text-sm font-bold text-white">ESTIEM LG Kyiv · локальна група Київ</h2>
+            <h2 className="mb-3 text-sm font-bold text-white">ESTIEM LG Kyiv · local group in Kyiv</h2>
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#94B0A1]">
-              <a href="https://estiemkyiv.org.ua/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Сайт</a>
+              <a href="https://estiemkyiv.org.ua/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Website</a>
               <a href="https://www.instagram.com/estiem_lgkyiv/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Instagram</a>
               <a href="https://t.me/estiem_lg_kyiv" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Telegram</a>
               <a href="https://www.linkedin.com/company/estiem-lg-kyiv/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">LinkedIn</a>
               <a href="https://www.facebook.com/estiemlgkyiv/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Facebook</a>
-              <a href="https://linktr.ee/estiem.kyiv" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Усі посилання</a>
+              <a href="https://linktr.ee/estiem.kyiv" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">All links</a>
             </div>
           </div>
         </div>
@@ -362,7 +356,7 @@ export function SignCard({ s, i }: { s: (typeof SIGNS)[number]; i: number }) {
         {String(i + 1).padStart(2, "0")}
       </span>
       <span className="text-[22px] font-bold tracking-[0.08em]">{s.en}</span>
-      <span className="text-base text-[#94B0A1]">{s.uk}</span>
+      <span className="text-base text-[#94B0A1]">{s.name}</span>
       <span className="text-sm text-[#94B0A1]">{s.period}</span>
     </Link>
   );
