@@ -4,9 +4,10 @@ import { useDbSync } from "@agent-native/core/client/hooks";
 import { createAgentNativeQueryClient } from "@agent-native/core/client/hooks";
 import { getThemeInitScript } from "@agent-native/core/client/ui";
 import { AppProviders } from "@agent-native/toolkit/app/providers";
+import { ClientOnly } from "@agent-native/toolkit/app/shared";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from "react-router";
 import type { LinksFunction } from "react-router";
 
 import { Layout as AppLayout } from "@/components/layout/Layout";
@@ -75,12 +76,33 @@ function DbSyncSetup() {
   return null;
 }
 
+// Must match workspaceAppPublicPaths in server/plugins/auth.ts. The server
+// exempts these prefixes from its auth guard, but <AppProviders> has its own
+// separate client-side gate that defaults to private — both lists must agree
+// or signed-out visitors still get bounced to /sign-in.
+const PUBLIC_PATHS = ["/", "/signs", "/about", "/seasons"];
+
+function isPublicPathname(pathname: string): boolean {
+  // Same prefix semantics as the server's matchesPathList: exact match or a
+  // child path ("/" only matches the root itself).
+  return PUBLIC_PATHS.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
 export default function Root() {
   const [queryClient] = useState(() => createAgentNativeQueryClient());
+  const { pathname } = useLocation();
+  const isPublicPath = isPublicPathname(pathname);
   return (
     <AppToolkitProvider>
-      <AppProviders queryClient={queryClient}>
-        <DbSyncSetup />
+      <AppProviders queryClient={queryClient} isPublicPath={isPublicPath}>
+        {/* Router-dependent shell services: public pages stream real SSR
+            markup, so keep these client-only (they were previously rendered
+            only inside the gated client branch). */}
+        <ClientOnly>
+          <DbSyncSetup />
+        </ClientOnly>
         <AppLayout>
           <Outlet />
         </AppLayout>

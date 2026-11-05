@@ -25,6 +25,9 @@ function run(command, extraEnv = {}) {
 
 run("corepack pnpm build", { NITRO_PRESET: "netlify", DATABASE_URL: dbUrl });
 
-if (process.env.CONTEXT === "production") {
+// guard:allow-env-credential — CONTEXT is Netlify's deploy-context flag
+// ("production"/"deploy-preview"/...), not a user credential; migrations must
+// run only for production deploys.
+if (process.env.CONTEXT === "production") { // guard:allow-env-credential — Netlify deploy-context flag, not a credential
   run("corepack pnpm migrate:production", { DATABASE_URL: dbUrl });
 }

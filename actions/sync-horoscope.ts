@@ -5,15 +5,12 @@
 // be. In production set HOROSCOPE_SYNC_TOKEN (deploy-level secret) and pass it
 // as `token`; when the env var is unset (local dev) writes are allowed.
 import { defineAction, fail } from "@agent-native/core/action";
-import { sql } from "drizzle-orm";
 import { z } from "zod";
 
-import { getDb, schema } from "../server/db.ts";
 import {
-  buildHoroscopeRecords,
-  fetchCosmyDayDaily,
-  kyivToday,
-} from "../server/lib/horoscope.ts";
+  fetchTodayRecords,
+  upsertHoroscopeRecords,
+} from "../server/lib/horoscope-sync.ts";
 
 export default defineAction({
   description:
@@ -43,73 +40,45 @@ export default defineAction({
       fail("Sync token is missing or wrong", { statusCode: 401 });
     }
 
-    let daily;
+    let today;
     try {
-      daily = await fetchCosmyDayDaily();
+      today = await fetchTodayRecords();
     } catch {
       fail("Horoscope source (CosmyDay) is unavailable, try again later", { statusCode: 503 });
     }
 
-    const date = kyivToday();
-    const records = buildHoroscopeRecords(daily, date);
-    if (records.length === 0) {
+    if (today.records.length === 0) {
       fail("CosmyDay returned no readable horoscopes", { statusCode: 502 });
     }
 
-    const now = new Date().toISOString();
-    const db = getDb();
-    await db
-      .insert(schema.horoscopes)
-      .values(
-        records.map((r) => ({
-          id: crypto.randomUUID(),
-          sign: r.sign,
-          date: r.date,
-          language: "en",
-          overview: r.overview,
-          work: r.work,
-          love: r.love,
-          mood: r.mood,
-          advice: r.advice,
-          closing: r.closing,
-          leadEvent: r.leadEvent,
-          luckyNumber: r.luckyNumber,
-          luckyColor: r.luckyColor,
-          compatibility: r.compatibility,
-          relevanceScore: r.relevanceScore,
-          source: r.source,
-          updatedAt: now,
-        })),
-      )
-      .onConflictDoUpdate({
-        target: [schema.horoscopes.sign, schema.horoscopes.date],
-        set: {
-          language: sql`excluded.language`,
-          overview: sql`excluded.overview`,
-          work: sql`excluded.work`,
-          love: sql`excluded.love`,
-          mood: sql`excluded.mood`,
-          advice: sql`excluded.advice`,
-          closing: sql`excluded.closing`,
-          leadEvent: sql`excluded.lead_event`,
-          luckyNumber: sql`excluded.lucky_number`,
-          luckyColor: sql`excluded.lucky_color`,
-          compatibility: sql`excluded.compatibility`,
-          relevanceScore: sql`excluded.relevance_score`,
-          source: sql`excluded.source`,
-          updatedAt: sql`excluded.updated_at`,
+    if (!today.publishable) {
+      // The source has not rolled over to the current Kyiv day yet: write
+      // nothing rather than label older content as today. Readers keep the
+      // fallback day until the source publishes (self-heal will pick it up).
+      return {
+        date: today.date,
+        synced: 0,
+        signs: [],
+        sourceDate: today.sourceDate,
+        _receipt: {
+          changed: false,
+          verified: true,
+          summary: `Source still publishes ${today.sourceDate ?? "an unpublished day"}; nothing stored for ${today.date}.`,
         },
-      });
+      };
+    }
+
+    await upsertHoroscopeRecords(today.records);
 
     return {
-      date,
-      synced: records.length,
-      signs: records.map((r) => r.sign),
-      sourceDate: daily.date ?? null,
+      date: today.date,
+      synced: today.records.length,
+      signs: today.records.map((r) => r.sign),
+      sourceDate: today.sourceDate,
       _receipt: {
         changed: true,
         verified: true,
-        summary: `Upserted ${records.length} horoscope rows for ${date}.`,
+        summary: `Upserted ${today.records.length} horoscope rows for ${today.date}.`,
       },
     };
   },

@@ -5,6 +5,7 @@ import { and, eq, max } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db.ts";
+import { ensureTodayStored } from "../server/lib/horoscope-sync.ts";
 import { kyivToday, horoscopeRowSchema, ZODIAC_SLUGS } from "../server/lib/horoscope.ts";
 
 export default defineAction({
@@ -34,13 +35,28 @@ export default defineAction({
     const requested = date ?? kyivToday();
     const db = getDb();
 
-    const [row] = await db
+    let [row] = await db
       .select()
       .from(schema.horoscopes)
       .where(
         and(eq(schema.horoscopes.sign, sign), eq(schema.horoscopes.date, requested)),
       )
       .limit(1);
+
+    // Self-heal (throttled): when today's row is missing because the cron was
+    // delayed or failed, pull the source once so the sign page shows today.
+    if (!row && requested === kyivToday()) {
+      if (await ensureTodayStored()) {
+        [row] = await db
+          .select()
+          .from(schema.horoscopes)
+          .where(
+            and(eq(schema.horoscopes.sign, sign), eq(schema.horoscopes.date, requested)),
+          )
+          .limit(1);
+      }
+    }
+
     if (row) {
       return { sign, date: requested, isFallback: false, horoscope: row };
     }

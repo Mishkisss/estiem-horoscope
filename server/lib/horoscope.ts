@@ -205,7 +205,7 @@ type CosmyDayDaily = {
   >;
 };
 
-type ParsedHoroscope = {
+export type ParsedHoroscope = {
   sign: ZodiacSlug;
   date: string; // publication day we store the reading under, YYYY-MM-DD
   overview: string;

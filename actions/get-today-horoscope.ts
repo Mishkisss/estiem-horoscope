@@ -6,6 +6,7 @@ import { eq, max } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db.ts";
+import { ensureTodayStored } from "../server/lib/horoscope-sync.ts";
 import { kyivToday, ZODIAC_SLUGS, horoscopeRowSchema } from "../server/lib/horoscope.ts";
 
 export default defineAction({
@@ -30,10 +31,22 @@ export default defineAction({
   run: async ({ date }) => {
     const requested = date ?? kyivToday();
     const db = getDb();
-    const rows = await db
+    let rows = await db
       .select()
       .from(schema.horoscopes)
       .where(eq(schema.horoscopes.date, requested));
+
+    // Self-heal: today's rows are usually written by the cron, but if that run
+    // was delayed or failed, the first reader pulls the source (throttled) so
+    // the page shows the current Kyiv day instead of the fallback day.
+    if (rows.length === 0 && requested === kyivToday()) {
+      if (await ensureTodayStored()) {
+        rows = await db
+          .select()
+          .from(schema.horoscopes)
+          .where(eq(schema.horoscopes.date, requested));
+      }
+    }
 
     if (rows.length > 0) {
       return {
