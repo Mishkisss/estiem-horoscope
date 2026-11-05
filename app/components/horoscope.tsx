@@ -356,7 +356,6 @@ export function SignCard({ s, i }: { s: (typeof SIGNS)[number]; i: number }) {
         {String(i + 1).padStart(2, "0")}
       </span>
       <span className="text-[22px] font-bold tracking-[0.08em]">{s.en}</span>
-      <span className="text-base text-[#94B0A1]">{s.name}</span>
       <span className="text-sm text-[#94B0A1]">{s.period}</span>
     </Link>
   );

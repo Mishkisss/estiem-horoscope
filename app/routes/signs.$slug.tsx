@@ -123,7 +123,6 @@ export default function SignRoute() {
             ← {String(i + 1).padStart(2, "0")} / 12
           </span>
           <h1 className="text-5xl font-bold tracking-wide md:text-6xl">{s.en}</h1>
-          <span className="text-xl text-[#94B0A1]">{s.name}</span>
           <div className="flex flex-wrap gap-2">
             <span className="rounded-full bg-[#FAD44D] px-4 py-2 text-xs font-bold text-[#174530]">
               {s.period}

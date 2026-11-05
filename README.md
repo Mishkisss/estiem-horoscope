@@ -4,12 +4,12 @@
 
 ![Homepage](docs/screenshot-home.png)
 
-The official ESTIEM horoscope: a Ukrainian-language daily horoscope site —
-home, all 12 zodiac signs, per-sign readings, seasonal themes and an about
-page. Readings are synced every day from the free
+The official ESTIEM horoscope: an English-language daily horoscope site —
+home, all 12 zodiac signs, per-sign readings and an about page. Readings are
+synced every day from the free
 [CosmyDay](https://api.cosmyday.com) API into PostgreSQL and served through
-public JSON actions: visitors never sign in, and the UI is Ukrainian while the
-source texts are currently English.
+public JSON actions: visitors never sign in. The design changes its seasonal
+theme automatically — there is deliberately no season control in the UI.
 
 ## Highlights
 
