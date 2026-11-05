@@ -1,14 +1,15 @@
 # ESTIEM Daily Horoscope
 
-**Live: https://estiem-horoscope.netlify.app**
+**The official horoscope of ESTIEM** — live: https://estiem-horoscope.netlify.app
 
 ![Homepage](docs/screenshot-home.png)
 
-Ukrainian-language daily horoscope site for ESTIEM — home, all 12 zodiac signs,
-per-sign readings, seasonal themes and an about page. Readings are synced every
-day from the free [CosmyDay](https://api.cosmyday.com) API into PostgreSQL and
-served through public JSON actions: visitors never sign in, and the UI is
-Ukrainian while the source texts are currently English.
+The official ESTIEM horoscope: a Ukrainian-language daily horoscope site —
+home, all 12 zodiac signs, per-sign readings, seasonal themes and an about
+page. Readings are synced every day from the free
+[CosmyDay](https://api.cosmyday.com) API into PostgreSQL and served through
+public JSON actions: visitors never sign in, and the UI is Ukrainian while the
+source texts are currently English.
 
 ## Highlights
 
