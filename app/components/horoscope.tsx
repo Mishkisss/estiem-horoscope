@@ -304,7 +304,10 @@ export function Page({ children }: { children: ReactNode }) {
         </div>
         <div className="grid gap-8 border-t border-[#94B0A1]/30 pt-7 md:grid-cols-2">
           <div>
-            <h2 className="mb-3 text-sm font-bold text-white">ESTIEM · international organization</h2>
+            <h2 className="mb-3 text-sm font-bold text-white">
+              ESTIEM · European Students of Industrial Engineering and
+              Management
+            </h2>
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#94B0A1]">
               <a href="https://estiem.org/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Website</a>
               <a href="https://www.facebook.com/ESTIEMfb/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Facebook</a>
@@ -313,7 +316,9 @@ export function Page({ children }: { children: ReactNode }) {
             </div>
           </div>
           <div>
-            <h2 className="mb-3 text-sm font-bold text-white">ESTIEM LG Kyiv · local group in Kyiv</h2>
+            <h2 className="mb-3 text-sm font-bold text-white">
+              LG Kyiv · Local Group in Kyiv
+            </h2>
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#94B0A1]">
               <a href="https://estiemkyiv.org.ua/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Website</a>
               <a href="https://www.instagram.com/estiem_lgkyiv/" target="_blank" rel="noreferrer" className="hover:text-[#FAD44D]">Instagram</a>
