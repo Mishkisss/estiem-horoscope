@@ -20,6 +20,8 @@ function dayLabel(date: string | undefined): string {
 export default function HomeRoute() {
   const season = useCurrentSeason();
   const { data } = useActionQuery("get-today-horoscope", {});
+  const { data: dayData } = useActionQuery("get-day-forecast", {});
+  const forecast = dayData?.forecast ?? null;
   const cancerReading = data?.horoscopes.find((h) => h.sign === "cancer");
   const featuredTitle =
     cancerReading?.overview.split(/(?<=[.!?])\s/)[0] ??
@@ -38,7 +40,7 @@ export default function HomeRoute() {
             {dayLabel(data?.date)}
           </span>
           <span className="text-lg font-semibold text-[#FAD44D]">
-            Daily horoscope
+            {data?.isFallback ? "Latest published forecast" : "Daily horoscope"}
           </span>
         </div>
         <p className="max-w-[760px] text-xl leading-normal text-[#94B0A1]">
@@ -47,6 +49,32 @@ export default function HomeRoute() {
         </p>
         <GoldButton to="/signs">Choose your sign</GoldButton>
       </section>
+
+      {forecast ? (
+        <section className="px-5 pb-16 md:px-16">
+          <div className="rounded-3xl border border-[#94B0A1] bg-[#174530] px-6 py-8 md:px-10 md:py-10">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full bg-[#FAD44D] px-4 py-2 text-sm font-bold text-[#174530]">
+                {dayLabel(forecast.date)}
+              </span>
+              <span className="text-sm font-semibold text-[#FAD44D]">
+                Forecast of the day
+              </span>
+              {forecast.weekday ? (
+                <span className="text-sm text-[#94B0A1]">{forecast.weekday}</span>
+              ) : null}
+            </div>
+            <p className="mt-5 max-w-[900px] text-lg leading-[1.75] text-[#94B0A1] md:text-xl">
+              {forecast.content}
+            </p>
+            <p className="mt-5 text-xs text-[#94B0A1]">
+              General forecast for the day
+              {forecast.energyLevel ? ` · Energy: ${forecast.energyLevel}` : ""}
+              {forecast.moon ? ` · Moon: ${forecast.moon}` : ""} · source CosmyDay
+            </p>
+          </div>
+        </section>
+      ) : null}
 
       <section className="bg-[#174530] px-5 py-8 text-center md:px-16">
         <p className="text-sm font-semibold text-[#FAD44D]">

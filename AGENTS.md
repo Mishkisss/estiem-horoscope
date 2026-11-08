@@ -31,9 +31,11 @@ For custom branding, keep `server/plugins/agent-native-email-branding.ts` aligne
 | `sync-horoscope` | POST | Pull today's readings from the CosmyDay source and upsert one `horoscopes` row per sign; the optional `token` argument must match `HOROSCOPE_SYNC_TOKEN` when that env is set |
 | `get-today-horoscope` | GET | Today's horoscope for all 12 signs (Europe/Kyiv day); falls back to the latest stored day via `isFallback` |
 | `get-sign-horoscope` | GET | One sign's horoscope by `sign` slug and optional `date`; same fallback |
+| `get-day-forecast` | GET | General (not per-sign) forecast for a calendar day from the source's week-ahead batch; powers the home page "Forecast of the day" block when the daily batch is unpublished |
 
 Run them with `pnpm action <name>`; the site frontend is expected to call
-`get-today-horoscope` / `get-sign-horoscope` through `useActionQuery`.
+`get-today-horoscope` / `get-sign-horoscope` / `get-day-forecast` through
+`useActionQuery`.
 
 ## Application state
 

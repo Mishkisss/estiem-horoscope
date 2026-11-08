@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { luckyExtrasFor, parseCosmyDayContent } from "./horoscope";
+import { luckyExtrasFor, parseCosmyDayContent, pickDayForecast } from "./horoscope";
 
 const SAMPLE = `✨ Monday, November 2 — Virgo
 
@@ -70,5 +70,67 @@ describe("luckyExtrasFor", () => {
     const fire = new Set(["aries", "leo", "sagittarius"]);
     const compat = luckyExtrasFor("leo", "2026-11-02").compatibility;
     expect(fire.has(compat) || compat === "aquarius").toBe(true);
+  });
+});
+
+const WEEK_AHEAD = {
+  generated_at: "2026-11-06T03:05:46.892628+00:00",
+  start_date: "2026-11-06",
+  end_date: "2026-11-12",
+  days: [
+    {
+      date: "2026-11-07",
+      weekday: "Saturday",
+      content: "Yesterday's text.",
+    },
+    {
+      date: "2026-11-08",
+      weekday: "Sunday",
+      energy_level: "medium",
+      moon: { sign: "Scorpio", phase_name: "Waning Crescent" },
+      content:
+        "Sunday brings a deep mood. **Today, a lovely connection between Venus and Mars** eases relationships.",
+    },
+    {
+      date: "2026-11-09",
+      weekday: "Monday",
+      content: "   ",
+    },
+  ],
+};
+
+describe("pickDayForecast", () => {
+  it("returns the matching day with markup stripped and moon described", () => {
+    const forecast = pickDayForecast(WEEK_AHEAD, "2026-11-08");
+
+    expect(forecast).not.toBeNull();
+    expect(forecast!.date).toBe("2026-11-08");
+    expect(forecast!.weekday).toBe("Sunday");
+    expect(forecast!.energyLevel).toBe("medium");
+    expect(forecast!.moon).toBe("Waning Crescent in Scorpio");
+    expect(forecast!.generatedAt).toBe("2026-11-06T03:05:46.892628+00:00");
+    expect(forecast!.content).toContain("eases relationships");
+    expect(forecast!.content).not.toContain("**");
+  });
+
+  it("returns null when the day is missing or has no readable text", () => {
+    expect(pickDayForecast(WEEK_AHEAD, "2026-11-13")).toBeNull();
+    expect(pickDayForecast(WEEK_AHEAD, "2026-11-09")).toBeNull();
+    expect(pickDayForecast({}, "2026-11-08")).toBeNull();
+  });
+
+  it("tolerates missing optional fields", () => {
+    const forecast = pickDayForecast(
+      { days: [{ date: "2026-11-08", content: "Plain text." }] },
+      "2026-11-08",
+    );
+
+    expect(forecast).toMatchObject({
+      weekday: null,
+      energyLevel: null,
+      moon: null,
+      generatedAt: null,
+      content: "Plain text.",
+    });
   });
 });

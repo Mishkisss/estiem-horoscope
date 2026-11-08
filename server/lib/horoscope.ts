@@ -166,6 +166,7 @@ export function luckyExtrasFor(sign: ZodiacSlug, date: string): {
 
 // --- CosmyDay source --------------------------------------------------------
 const COSMYDAY_DAILY_URL = "https://api.cosmyday.com/content/daily";
+const COSMYDAY_WEEK_AHEAD_URL = "https://api.cosmyday.com/content/week-ahead";
 const SOURCE_NAME = "cosmyday";
 const FETCH_TIMEOUT_MS = 15_000;
 
@@ -253,4 +254,83 @@ export function buildHoroscopeRecords(
     });
   }
   return records;
+}
+
+// --- CosmyDay week-ahead (general day forecast) -----------------------------
+// The per-sign daily readings are one AI batch per day; the week-ahead batch
+// covers seven days at once and stays readable even when the daily batch has
+// not been published. It powers the "Forecast of the day" block, which is
+// deliberately labeled as a general (not per-sign) forecast.
+
+type CosmyDayMoon =
+  | { sign?: string; phase_name?: string }
+  | string
+  | null
+  | undefined;
+
+type CosmyDayWeekAheadDay = {
+  date?: string;
+  weekday?: string;
+  energy_level?: string;
+  moon?: CosmyDayMoon;
+  content?: string;
+};
+
+type CosmyDayWeekAhead = {
+  generated_at?: string;
+  start_date?: string;
+  end_date?: string;
+  days?: CosmyDayWeekAheadDay[];
+};
+
+export type DayForecast = {
+  /** Day the forecast is written for, YYYY-MM-DD. */
+  date: string;
+  weekday: string | null;
+  energyLevel: string | null;
+  moon: string | null;
+  content: string;
+  /** When the source generated this week-ahead batch. */
+  generatedAt: string | null;
+};
+
+export async function fetchCosmyDayWeekAhead(): Promise<CosmyDayWeekAhead> {
+  const res = await fetch(COSMYDAY_WEEK_AHEAD_URL, {
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
+  if (!res.ok) {
+    throw new Error(`CosmyDay API responded ${res.status}`);
+  }
+  return (await res.json()) as CosmyDayWeekAhead;
+}
+
+function describeMoon(moon: CosmyDayMoon): string | null {
+  if (!moon) return null;
+  if (typeof moon === "string") return moon.trim() || null;
+  const phase = moon.phase_name?.trim() || null;
+  const sign = moon.sign?.trim() || null;
+  if (phase && sign) return `${phase} in ${sign}`;
+  return phase ?? sign;
+}
+
+/**
+ * Pick the general forecast for `date` out of a week-ahead payload. Returns
+ * null when the source has no entry (or no readable text) for that day, so
+ * callers never render an empty block.
+ */
+export function pickDayForecast(
+  weekAhead: CosmyDayWeekAhead,
+  date: string,
+): DayForecast | null {
+  const day = weekAhead.days?.find((d) => d.date === date);
+  const content = day?.content?.trim();
+  if (!day?.date || !content) return null;
+  return {
+    date: day.date,
+    weekday: day.weekday?.trim() || null,
+    energyLevel: day.energy_level?.trim() || null,
+    moon: describeMoon(day.moon),
+    content: stripMarkup(content),
+    generatedAt: weekAhead.generated_at?.trim() || null,
+  };
 }

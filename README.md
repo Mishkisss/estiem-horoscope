@@ -40,6 +40,7 @@ theme automatically — there is deliberately no season control in the UI.
 | --- | --- | --- | --- |
 | `get-today-horoscope` | GET | Public (no session) | Today's reading for all 12 signs (Europe/Kyiv); falls back to the latest stored day with `isFallback: true` |
 | `get-sign-horoscope` | GET | Public (no session) | One sign by slug (`aries`…`pisces`), optional `date` |
+| `get-day-forecast` | GET | Public (no session) | General (not per-sign) forecast for a day from the source's week-ahead batch; keeps the home page current even while the per-sign daily batch is unpublished |
 | `sync-horoscope` | POST | Anyone; overwriting requires `HOROSCOPE_SYNC_TOKEN` env + matching `token` argument | Fetches the source and upserts all 12 rows |
 
 ```bash
@@ -47,13 +48,15 @@ theme automatically — there is deliberately no season control in the UI.
 curl 'https://estiem-horoscope.netlify.app/_agent-native/actions/get-today-horoscope'
 # read one sign for a date
 curl 'https://estiem-horoscope.netlify.app/_agent-native/actions/get-sign-horoscope?sign=cancer&date=2026-11-05'
+# read the general forecast for a day
+curl 'https://estiem-horoscope.netlify.app/_agent-native/actions/get-day-forecast'
 # refresh content (cron)
 curl -X POST 'https://estiem-horoscope.netlify.app/_agent-native/actions/sync-horoscope' \
   -H 'Content-Type: application/json' \
   -d '{"token":"<HOROSCOPE_SYNC_TOKEN>"}'
 ```
 
-All three declare `requiresAuth: false`. Public *pages* are configured twice,
+All four declare `requiresAuth: false`. Public *pages* are configured twice,
 on purpose — the server list (`workspaceAppPublicPaths` in
 `server/plugins/auth.ts`) and the client session gate (`PUBLIC_PATHS` in
 `app/root.tsx`) must match, or signed-out visitors get bounced to `/sign-in`.
