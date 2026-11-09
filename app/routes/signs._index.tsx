@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { GoldButton, Page, SIGNS, SectionIntro, SignCard } from "@/components/horoscope";
+import { AdSlot } from "@/components/ads";
 
 export function meta() {
   return [{ title: "All Signs · Daily Horoscope" }];
@@ -66,6 +67,8 @@ export default function SignsRoute() {
           <GoldButton to="/signs/aries">Read the horoscope</GoldButton>
         </div>
       </div>
+      {/* Advertising placement — renders nothing until ads are enabled. */}
+      <AdSlot />
     </Page>
   );
 }

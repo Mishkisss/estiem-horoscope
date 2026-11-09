@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router";
 import type { ReactNode } from "react";
 
+import { AdConsentBar } from "@/components/ads";
+
 export const SIGNS = [
   { slug: "aries", en: "ARIES", name: "Aries", period: "21.03 – 19.04" },
   { slug: "taurus", en: "TAURUS", name: "Taurus", period: "20.04 – 20.05" },
@@ -300,7 +302,12 @@ export function Page({ children }: { children: ReactNode }) {
       <footer className="relative flex flex-col gap-8 bg-[#174530] px-5 py-10 md:px-16">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Logo width={135} />
-          <span className="text-sm text-[#94B0A1]">© Daily Horoscope · ESTIEM</span>
+          <span className="flex flex-wrap items-center gap-5 text-sm text-[#94B0A1]">
+            <Link to="/privacy" className="transition hover:text-[#FAD44D]">
+              Privacy
+            </Link>
+            <span>© Daily Horoscope · ESTIEM</span>
+          </span>
         </div>
         <div className="grid gap-8 border-t border-[#94B0A1]/30 pt-7 md:grid-cols-2">
           <div>
@@ -330,6 +337,9 @@ export function Page({ children }: { children: ReactNode }) {
           </div>
         </div>
       </footer>
+      {/* Dormant until AD_CONFIG.enabled: shows the GDPR consent bar that
+          gates every AdSlot on the site. */}
+      <AdConsentBar />
     </div>
   );
 }

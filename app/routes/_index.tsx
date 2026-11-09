@@ -5,6 +5,7 @@ import {
   SignGrid,
   useCurrentSeason,
 } from "@/components/horoscope";
+import { AdSlot } from "@/components/ads";
 import { Constellation } from "@/components/constellation";
 import { useActionQuery } from "@agent-native/core/client/hooks";
 
@@ -92,6 +93,9 @@ export default function HomeRoute() {
         />
         <SignGrid />
       </section>
+
+      {/* Advertising placement — renders nothing until ads are enabled. */}
+      <AdSlot />
 
       <section className="flex flex-col items-center gap-12 bg-[#174530] px-5 py-[72px] md:px-16 lg:flex-row">
         <div className="flex flex-1 flex-col gap-6">

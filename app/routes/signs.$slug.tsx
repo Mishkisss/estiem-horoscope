@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router";
 import { useActionQuery } from "@agent-native/core/client/hooks";
 import { Page, SIGNS } from "@/components/horoscope";
+import { AdSlot } from "@/components/ads";
 import { Constellation } from "@/components/constellation";
 
 export function meta() {
@@ -143,6 +144,8 @@ export default function SignRoute() {
           {next.name} →
         </Link>
       </section>
+      {/* Advertising placement — renders nothing until ads are enabled. */}
+      <AdSlot />
     </Page>
   );
 }

@@ -60,6 +60,18 @@ All four declare `requiresAuth: false`. Public *pages* are configured twice,
 on purpose — the server list (`workspaceAppPublicPaths` in
 `server/plugins/auth.ts`) and the client session gate (`PUBLIC_PATHS` in
 `app/root.tsx`) must match, or signed-out visitors get bounced to `/sign-in`.
+Pages: `/`, `/signs`, `/about`, `/privacy` (privacy policy — required before
+advertising goes live).
+
+## Advertising (prepared, switched off)
+
+Display banners (Adsterra, 300×250) are wired up but dormant:
+`AD_CONFIG.enabled = false` in `app/lib/ads-config.ts`. Slots
+(`app/components/ads.tsx`) render nothing and make no requests until the flag
+flips; when live, they are gated by a GDPR consent bar and the `/privacy`
+page describes them. Activation is one command —
+`node scripts/enable-ads.mjs <key>` plus a deploy — following
+`docs/monetization-playbook.md`.
 
 ## Daily sync
 
